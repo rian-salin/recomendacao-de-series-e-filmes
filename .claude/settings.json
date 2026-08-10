@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker --version)",
+      "Bash(php --version)",
+      "Bash(curl --version)",
+      "Bash(docker info *)",
+      "Bash(curl -s \"https://laravel.build/laravel-app?with=mariadb\" -o /tmp/claude-800001181/-home-rian-salin-recomendacao-de-series-e-filmes/b738b949-cfb2-464c-b770-0b6a7db7354f/scratchpad/laravel-build.sh)",
+      "Bash(chmod +x /tmp/claude-800001181/-home-rian-salin-recomendacao-de-series-e-filmes/b738b949-cfb2-464c-b770-0b6a7db7354f/scratchpad/install-laravel.sh)",
+      "Bash(bash /tmp/claude-800001181/-home-rian-salin-recomendacao-de-series-e-filmes/b738b949-cfb2-464c-b770-0b6a7db7354f/scratchpad/install-laravel.sh)",
+      "Bash(./vendor/bin/sail up *)",
+      "Bash(./vendor/bin/sail ps *)",
+      "Bash(curl -s https://repo.packagist.org/p2/laravel/breeze.json)",
+      "Bash(python3 -c ' *)",
+      "Bash(./vendor/bin/sail composer *)",
+      "Bash(./vendor/bin/sail artisan *)",
+      "Bash(python3 -c \"import json,sys; print\\(json.load\\(sys.stdin\\)['version']\\)\")",
+      "Bash(./vendor/bin/sail npm *)",
+      "Bash(python3 -c \"import json; print\\(json.dumps\\(json.load\\(open\\('package.json'\\)\\)['devDependencies'], indent=2\\)\\)\")",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_evaluate",
+      "mcp__plugin_playwright_playwright__browser_console_messages",
+      "mcp__plugin_playwright_playwright__browser_close",
+      "Bash(rm -rf .playwright-mcp)",
+      "Bash(./vendor/bin/sail php *)",
+      "Bash(./vendor/bin/sail mariadb *)",
+      "Bash(ls -la login.png; rm login.png; git status --short | grep -c '^??')"
+    ],
+    "additionalDirectories": [
+      "/home/rian.salin/recomendacao-de-series-e-filmes"
+    ]
+  }
+}
