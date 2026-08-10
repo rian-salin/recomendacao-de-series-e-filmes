@@ -8,7 +8,6 @@
         "infer-conventions",
         "laravel-best-practices",
         "livewire-development",
-        "volt-development",
         "pest-testing",
         "tailwindcss-development"
     ]
