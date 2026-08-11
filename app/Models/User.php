@@ -27,6 +27,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'locked_until' => 'datetime',
+            'login_locked_permanently' => 'boolean',
+            'login_attempts' => 'integer',
         ];
     }
 }
