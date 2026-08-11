@@ -1,6 +1,6 @@
 SAIL = vendor/bin/sail
 
-.PHONY: help up down stop restart build ps logs shell root artisan test pint migrate migrate-fresh seed fresh npm-dev npm-build install
+.PHONY: help up down stop restart build ps logs shell root db artisan test pint migrate migrate-fresh seed fresh npm-dev npm-build install
 
 help:
 	@echo "Comandos disponiveis:"
@@ -13,6 +13,7 @@ help:
 	@echo "  make logs           - segue os logs dos containers"
 	@echo "  make shell          - abre um shell no container da aplicacao"
 	@echo "  make root           - abre um shell como root no container da aplicacao"
+	@echo "  make db             - abre o console do MariaDB"
 	@echo "  make artisan cmd='migrate' - executa um comando artisan"
 	@echo "  make test           - roda a suite de testes (pest/phpunit)"
 	@echo "  make pint           - formata o codigo PHP com o Pint"
@@ -50,6 +51,9 @@ shell:
 
 root:
 	$(SAIL) root-shell
+
+db:
+	$(SAIL) mariadb
 
 artisan:
 	$(SAIL) artisan $(cmd)
