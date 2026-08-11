@@ -50,7 +50,7 @@ class Login extends Component
             return __('This account has been locked due to too many failed login attempts. Please contact support.');
         }
 
-        $minutes = max(1, now()->diffInMinutes($exception->retryAt));
+        $minutes = max(1, (int) ceil(now()->diffInMinutes($exception->retryAt)));
 
         return __('Too many login attempts. Please try again in :minutes minutes.', ['minutes' => $minutes]);
     }
