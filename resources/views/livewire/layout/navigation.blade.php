@@ -16,7 +16,9 @@
             </div>
 
             <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                <span class="me-4 text-sm text-gray-600">{{ auth()->user()->name }}</span>
+                @auth
+                    <span class="me-4 text-sm text-gray-600">{{ auth()->user()->name }}</span>
+                @endauth
 
                 <button wire:click="logout" class="text-sm text-gray-500 hover:text-gray-700">
                     {{ __('Log Out') }}
@@ -43,8 +45,10 @@
 
         <div class="border-t border-gray-200 pb-3 pt-4">
             <div class="px-4">
-                <div class="text-base font-medium text-gray-800">{{ auth()->user()->name }}</div>
-                <div class="text-sm font-medium text-gray-500">{{ auth()->user()->email }}</div>
+                @auth
+                    <div class="text-base font-medium text-gray-800">{{ auth()->user()->name }}</div>
+                    <div class="text-sm font-medium text-gray-500">{{ auth()->user()->email }}</div>
+                @endauth
             </div>
 
             <div class="mt-3 space-y-1">
