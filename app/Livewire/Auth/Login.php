@@ -18,8 +18,6 @@ class Login extends Component
 
     public string $password = '';
 
-    public bool $remember = false;
-
     public function authenticate(AuthService $authService): void
     {
         $this->validate([
@@ -28,7 +26,7 @@ class Login extends Component
         ]);
 
         try {
-            $authService->attemptLogin($this->email, $this->password, $this->remember);
+            $authService->attemptLogin($this->email, $this->password);
         } catch (AccountLockedException $e) {
             throw ValidationException::withMessages([
                 'email' => $this->lockoutMessage($e),

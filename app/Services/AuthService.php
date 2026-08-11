@@ -21,7 +21,7 @@ class AuthService
 
     private const PERMANENT_LOCK_AT_ATTEMPT = 6;
 
-    public function attemptLogin(string $email, string $password, bool $remember): void
+    public function attemptLogin(string $email, string $password): void
     {
         $user = User::where('email', $email)->first();
 
@@ -29,7 +29,7 @@ class AuthService
             $this->ensureIsNotLocked($user);
         }
 
-        if (! Auth::attempt(['email' => $email, 'password' => $password], $remember)) {
+        if (! Auth::attempt(['email' => $email, 'password' => $password])) {
             if ($user) {
                 $this->registerFailedAttempt($user);
             }
