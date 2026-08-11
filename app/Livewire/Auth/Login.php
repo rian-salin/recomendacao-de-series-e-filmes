@@ -2,11 +2,10 @@
 
 namespace App\Livewire\Auth;
 
-use Illuminate\Auth\Events\Lockout;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\RateLimiter;
+use App\Exceptions\AccountLockedException;
+use App\Exceptions\InvalidCredentialsException;
+use App\Services\AuthService;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
@@ -21,51 +20,39 @@ class Login extends Component
 
     public bool $remember = false;
 
-    public function authenticate(): void
+    public function authenticate(AuthService $authService): void
     {
         $this->validate([
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
         ]);
 
-        $this->ensureIsNotRateLimited();
-
-        if (! Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
-            RateLimiter::hit($this->throttleKey());
-
+        try {
+            $authService->attemptLogin($this->email, $this->password, $this->remember);
+        } catch (AccountLockedException $e) {
+            throw ValidationException::withMessages([
+                'email' => $this->lockoutMessage($e),
+            ]);
+        } catch (InvalidCredentialsException) {
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
-
-        RateLimiter::clear($this->throttleKey());
 
         Session::regenerate();
 
         $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
     }
 
-    protected function ensureIsNotRateLimited(): void
+    private function lockoutMessage(AccountLockedException $exception): string
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
-            return;
+        if ($exception->retryAt === null) {
+            return __('This account has been locked due to too many failed login attempts. Please contact support.');
         }
 
-        event(new Lockout(request()));
+        $minutes = max(1, now()->diffInMinutes($exception->retryAt));
 
-        $seconds = RateLimiter::availableIn($this->throttleKey());
-
-        throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
-        ]);
-    }
-
-    protected function throttleKey(): string
-    {
-        return Str::transliterate(Str::lower($this->email).'|'.request()->ip());
+        return __('Too many login attempts. Please try again in :minutes minutes.', ['minutes' => $minutes]);
     }
 
     public function render(): View
