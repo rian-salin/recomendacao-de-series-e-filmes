@@ -8,7 +8,7 @@
     $isFollowing = $post->followFromCurrentUser !== null;
     $isAuthor = $post->user_id === auth()->id();
     $isClosed = $post->status === PostStatus::Closed;
-    $canInteract = ! $isAuthor && ! $isClosed;
+    $canInteract = auth()->user()->can('vote', $post) && ! $isClosed;
 @endphp
 
 <article class="mb-4 rounded-lg bg-white p-6 shadow-sm">

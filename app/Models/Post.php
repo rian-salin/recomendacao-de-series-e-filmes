@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PostStatus;
 use App\Enums\PostType;
+use App\Enums\VoteType;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -56,6 +57,22 @@ class Post extends Model
     protected function open(Builder $query): void
     {
         $query->where('status', PostStatus::Open);
+    }
+
+    /**
+     * Carrega o que o card de publicação (`x-post-card`) precisa para
+     * renderizar: autor, voto/acompanhamento do usuário atual e as
+     * contagens de recomendações, não recomendações e seguidores.
+     */
+    #[Scope]
+    protected function withInteractionCounts(Builder $query): void
+    {
+        $query->with(['user:id,name', 'voteFromCurrentUser', 'followFromCurrentUser'])
+            ->withCount([
+                'votes as recommendations_count' => fn (Builder $query) => $query->where('type', VoteType::Recommend),
+                'votes as not_recommendations_count' => fn (Builder $query) => $query->where('type', VoteType::NotRecommend),
+                'follows as followers_count',
+            ]);
     }
 
     /**
