@@ -110,3 +110,19 @@ test('changing the vote updates the existing row and preserves created_at', func
         ->and($vote->type)->toBe(VoteType::NotRecommend)
         ->and($vote->created_at->toDateTimeString())->toBe($original->created_at->toDateTimeString());
 });
+
+test('the author cannot vote on or follow their own publication', function () {
+    $author = User::factory()->create();
+    $post = Post::factory()->for($author)->create();
+
+    expect($author->can('vote', $post))->toBeFalse()
+        ->and($author->can('follow', $post))->toBeFalse();
+});
+
+test('another user can vote on and follow the publication', function () {
+    $post = Post::factory()->create();
+    $stranger = User::factory()->create();
+
+    expect($stranger->can('vote', $post))->toBeTrue()
+        ->and($stranger->can('follow', $post))->toBeTrue();
+});
