@@ -12,6 +12,7 @@
     "Do not recommend": "Não recomendo",
     "Email": "E-mail",
     "Follow": "Acompanhar",
+    "Followed publications": "Publicações acompanhadas",
     "Following": "Acompanhando",
     "Go to page :page": "Ir para a página :page",
     "Log in": "Entrar",
@@ -40,6 +41,7 @@
     "to": "até",
     "Too many login attempts. Please try again in :minutes minutes.": "Muitas tentativas de login. Tente novamente em :minutes minutos.",
     "Type": "Tipo",
+    "You are not following any publications yet.": "Você ainda não acompanha nenhuma publicação.",
     "You have not created any publications yet.": "Você ainda não criou nenhuma publicação.",
     "You're logged in!": "Você está autenticado!",
     "Your publication": "Sua publicação"
