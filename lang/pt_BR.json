@@ -8,6 +8,7 @@
     "Log in": "Entrar",
     "Log Out": "Sair",
     "Movie": "Filme",
+    "My publications": "Minhas publicações",
     "Name": "Nome",
     "Not registered?": "Ainda não tem conta?",
     "Open": "Aberta",
@@ -16,5 +17,6 @@
     "Series": "Série",
     "This account has been locked due to too many failed login attempts. Please contact support.": "Esta conta foi bloqueada por excesso de tentativas de login. Entre em contato com o suporte.",
     "Too many login attempts. Please try again in :minutes minutes.": "Muitas tentativas de login. Tente novamente em :minutes minutos.",
+    "You have not created any publications yet.": "Você ainda não criou nenhuma publicação.",
     "You're logged in!": "Você está autenticado!"
 }

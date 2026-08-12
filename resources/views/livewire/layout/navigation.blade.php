@@ -12,6 +12,9 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('posts.mine')" :active="request()->routeIs('posts.*')" wire:navigate>
+                        {{ __('My publications') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -40,6 +43,9 @@
         <div class="space-y-1 pb-3 pt-2">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('posts.mine')" :active="request()->routeIs('posts.*')" wire:navigate>
+                {{ __('My publications') }}
             </x-responsive-nav-link>
         </div>
 
