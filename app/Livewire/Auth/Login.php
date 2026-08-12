@@ -39,7 +39,7 @@ class Login extends Component
 
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        $this->redirectIntended(default: route('posts.index', absolute: false), navigate: true);
     }
 
     private function lockoutMessage(AccountLockedException $exception): string

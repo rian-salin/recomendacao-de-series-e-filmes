@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Route;
 Route::view('/', 'welcome');
 
 Route::middleware('auth')->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
     Route::get('publicacoes', Feed::class)->name('posts.index');
     Route::get('publicacoes/acompanhadas', Index::class)->name('follows.index');
     Route::get('minhas-publicacoes', Mine::class)->name('posts.mine');

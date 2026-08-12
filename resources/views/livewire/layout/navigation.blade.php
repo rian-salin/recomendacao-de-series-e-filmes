@@ -3,16 +3,19 @@
         <div class="flex h-16 justify-between">
             <div class="flex">
                 <div class="flex shrink-0 items-center">
-                    <a href="{{ route('dashboard') }}" wire:navigate>
+                    <a href="{{ route('posts.index') }}" wire:navigate>
                         <x-application-logo class="text-lg" />
                     </a>
                 </div>
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
-                        {{ __('Dashboard') }}
+                    <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')" wire:navigate>
+                        {{ __('Publications') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('posts.mine')" :active="request()->routeIs('posts.*')" wire:navigate>
+                    <x-nav-link :href="route('follows.index')" :active="request()->routeIs('follows.index')" wire:navigate>
+                        {{ __('Followed publications') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('posts.mine')" :active="request()->routeIs('posts.mine')" wire:navigate>
                         {{ __('My publications') }}
                     </x-nav-link>
                 </div>
@@ -41,10 +44,13 @@
 
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="space-y-1 pb-3 pt-2">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
-                {{ __('Dashboard') }}
+            <x-responsive-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')" wire:navigate>
+                {{ __('Publications') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('posts.mine')" :active="request()->routeIs('posts.*')" wire:navigate>
+            <x-responsive-nav-link :href="route('follows.index')" :active="request()->routeIs('follows.index')" wire:navigate>
+                {{ __('Followed publications') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('posts.mine')" :active="request()->routeIs('posts.mine')" wire:navigate>
                 {{ __('My publications') }}
             </x-responsive-nav-link>
         </div>
