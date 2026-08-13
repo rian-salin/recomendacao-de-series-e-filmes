@@ -25,7 +25,7 @@ Versões dentro dos containers (não precisam ser instaladas): PHP 8.5, Node 24,
 
 ## 2. Instalação
 
-O primeiro `composer install` é o problema clássico do ovo e da galinha: o Sail vive dentro de `vendor/`, que ainda não existe. Por isso o passo 2 usa um container PHP temporário para instalar as dependências.
+O primeiro `composer install` o Sail vive dentro de `vendor/`, que ainda não existe. Por isso o passo 2 usa um container PHP temporário para instalar as dependências.
 
 ```bash
 # 1. Clonar o repositório
