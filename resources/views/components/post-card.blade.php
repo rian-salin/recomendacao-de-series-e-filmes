@@ -11,13 +11,20 @@
     $canInteract = auth()->user()->can('vote', $post) && ! $isClosed;
 @endphp
 
-<article class="mb-4 rounded-lg bg-white p-6 shadow-sm">
+<article @class([
+    'mb-4 rounded-lg p-6 shadow-sm',
+    'bg-white' => ! $isClosed,
+    'bg-gray-50' => $isClosed,
+])>
     <div class="flex items-start justify-between gap-4">
         <div>
             <h2 class="text-lg font-semibold text-gray-900">{{ $post->title }}</h2>
 
             <p class="mt-1 text-sm text-gray-500">
                 {{ $post->user->name }} &middot; {{ $post->type->label() }} &middot; {{ $post->created_at->format('d/m/Y') }}
+                @if ($isClosed)
+                    &middot; {{ __('Closed on :date', ['date' => $post->closed_at->format('d/m/Y')]) }}
+                @endif
             </p>
         </div>
 

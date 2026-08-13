@@ -201,3 +201,50 @@ test('the confirmation component forwards the action to the confirm button, not 
         ->and($rendered)->toContain('wire:click="delete(7)"')
         ->and(Str::before($rendered, 'Excluir publicação?'))->not->toContain('wire:click');
 });
+
+test('my publications shows the counts and the closed date', function () {
+    $author = User::factory()->create();
+    $post = Post::factory()->for($author)->closed()->create([
+        'closed_at' => now()->setDate(2026, 8, 12),
+    ]);
+
+    Vote::factory()->for($post)->recommend()->count(2)->create();
+
+    Livewire::actingAs($author)
+        ->test(Mine::class)
+        ->assertSee(__('Closed on :date', ['date' => '12/08/2026']))
+        ->assertSee(__(':count recommend', ['count' => 2]));
+});
+
+test('a publication with no interaction offers both close and delete', function () {
+    $author = User::factory()->create();
+    Post::factory()->for($author)->create();
+
+    Livewire::actingAs($author)
+        ->test(Mine::class)
+        ->assertSee(__('Close publication?'))
+        ->assertSee(__('Delete publication?'))
+        ->assertDontSee(__('It is not possible to delete: the publication has already received interaction from other users.'));
+});
+
+test('the delete confirmation is replaced by a reason once another user interacts', function () {
+    $author = User::factory()->create();
+    $post = Post::factory()->for($author)->create();
+
+    Follow::factory()->for($post)->create();
+
+    Livewire::actingAs($author)
+        ->test(Mine::class)
+        ->assertSee(__('It is not possible to delete: the publication has already received interaction from other users.'))
+        ->assertDontSee(__('Delete publication?'));
+});
+
+test('a closed publication no longer offers to be closed again', function () {
+    $author = User::factory()->create();
+    Post::factory()->for($author)->closed()->create();
+
+    Livewire::actingAs($author)
+        ->test(Mine::class)
+        ->assertDontSee(__('Close publication?'))
+        ->assertSee(__('Delete publication?'));
+});
