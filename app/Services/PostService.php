@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Enums\PostStatus;
 use App\Exceptions\PostAlreadyClosedException;
+use App\Exceptions\PostHasInteractionsException;
 use App\Models\Post;
+use Illuminate\Support\Facades\DB;
 
 class PostService
 {
@@ -21,5 +23,26 @@ class PostService
         if ($affected === 0) {
             throw new PostAlreadyClosedException;
         }
+    }
+
+    /**
+     * A transacao existe so como veiculo da trava: o delete com cascade ja e um
+     * statement unico. Sem ela, um voto commitado entre a verificacao e o delete
+     * seria apagado pelo cascade sem deixar rastro.
+     */
+    public function delete(Post $post): void
+    {
+        DB::transaction(function () use ($post) {
+            $lockedPost = Post::whereKey($post->id)->lockForUpdate()->firstOrFail();
+
+            $hasOthersInteraction = $lockedPost->votes()->where('user_id', '!=', $lockedPost->user_id)->exists()
+                || $lockedPost->follows()->where('user_id', '!=', $lockedPost->user_id)->exists();
+
+            if ($hasOthersInteraction) {
+                throw new PostHasInteractionsException;
+            }
+
+            $lockedPost->delete();
+        });
     }
 }
