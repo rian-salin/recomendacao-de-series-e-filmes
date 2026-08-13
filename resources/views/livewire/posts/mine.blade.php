@@ -54,7 +54,7 @@
                 <p class="mt-1 text-sm text-gray-500">
                     {{ $post->type->label() }} &middot; {{ $post->created_at->format('d/m/Y') }}
                     @if ($isClosed)
-                        &middot; {{ __('Closed on :date', ['date' => $post->closed_at->format('d/m/Y')]) }}
+                        &middot; {{ __('Closed on :date', ['date' => $post->closed_at?->format('d/m/Y')]) }}
                     @endif
                 </p>
 

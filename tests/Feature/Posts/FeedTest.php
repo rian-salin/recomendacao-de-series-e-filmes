@@ -84,3 +84,23 @@ test('interacting with a closed publication surfaces the error message', functio
 
     expect(Vote::count())->toBe(0);
 });
+
+test('interacting with a publication that no longer exists surfaces the error message', function () {
+    $post = Post::factory()->create();
+    $postId = $post->id;
+
+    $post->delete();
+
+    Livewire::actingAs(User::factory()->create())
+        ->test(Feed::class)
+        ->call('recommend', $postId)
+        ->assertSet('interactionError', __('This publication no longer exists.'));
+
+    Livewire::actingAs(User::factory()->create())
+        ->test(Feed::class)
+        ->call('follow', $postId)
+        ->assertSet('interactionError', __('This publication no longer exists.'));
+
+    expect(Vote::count())->toBe(0)
+        ->and(Follow::count())->toBe(0);
+});

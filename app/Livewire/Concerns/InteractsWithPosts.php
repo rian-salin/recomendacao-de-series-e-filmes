@@ -7,6 +7,7 @@ use App\Exceptions\PostAlreadyClosedException;
 use App\Models\Post;
 use App\Services\VoteService;
 use Closure;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 trait InteractsWithPosts
 {
@@ -24,11 +25,13 @@ trait InteractsWithPosts
 
     public function follow(VoteService $votes, int $postId): void
     {
-        $post = Post::findOrFail($postId);
+        $this->runInteraction(function () use ($votes, $postId) {
+            $post = Post::findOrFail($postId);
 
-        $this->authorize('follow', $post);
+            $this->authorize('follow', $post);
 
-        $this->runInteraction(fn () => $votes->follow($post, auth()->user()));
+            $votes->follow($post, auth()->user());
+        });
     }
 
     /**
@@ -38,11 +41,13 @@ trait InteractsWithPosts
      */
     protected function castVote(VoteService $votes, int $postId, VoteType $type): void
     {
-        $post = Post::findOrFail($postId);
+        $this->runInteraction(function () use ($votes, $postId, $type) {
+            $post = Post::findOrFail($postId);
 
-        $this->authorize('vote', $post);
+            $this->authorize('vote', $post);
 
-        $this->runInteraction(fn () => $votes->vote($post, auth()->user(), $type));
+            $votes->vote($post, auth()->user(), $type);
+        });
     }
 
     protected function runInteraction(Closure $interaction): void
@@ -51,6 +56,8 @@ trait InteractsWithPosts
 
         try {
             $interaction();
+        } catch (ModelNotFoundException) {
+            $this->interactionError = __('This publication no longer exists.');
         } catch (PostAlreadyClosedException) {
             $this->interactionError = __('This publication has already been closed.');
         }

@@ -54,3 +54,15 @@ test('the page does not list publications followed by someone else', function ()
         ->test(Index::class)
         ->assertDontSee('Duna');
 });
+
+test('interacting with a publication that no longer exists surfaces the error message', function () {
+    $post = Post::factory()->create();
+    $postId = $post->id;
+
+    $post->delete();
+
+    Livewire::actingAs(User::factory()->create())
+        ->test(Index::class)
+        ->call('recommend', $postId)
+        ->assertSet('interactionError', __('This publication no longer exists.'));
+});
