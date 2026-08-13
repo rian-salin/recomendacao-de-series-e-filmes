@@ -91,3 +91,23 @@ test('a closed publication with no interaction can still be deleted', function (
 
     expect(Post::count())->toBe(0);
 });
+
+test('the third party interaction flags ignore the author and catch other users', function () {
+    $author = User::factory()->create();
+    $untouched = Post::factory()->for($author)->create();
+    $votedByAuthor = Post::factory()->for($author)->create();
+    $votedByStranger = Post::factory()->for($author)->create();
+    $followedByStranger = Post::factory()->for($author)->create();
+
+    Vote::factory()->for($votedByAuthor)->for($author)->recommend()->create();
+    Vote::factory()->for($votedByStranger)->recommend()->create();
+    Follow::factory()->for($followedByStranger)->create();
+
+    $posts = Post::query()->withThirdPartyInteraction()->get()->keyBy('id');
+
+    expect($posts[$untouched->id]->has_third_party_votes)->toBeFalse()
+        ->and($posts[$untouched->id]->has_third_party_follows)->toBeFalse()
+        ->and($posts[$votedByAuthor->id]->has_third_party_votes)->toBeFalse()
+        ->and($posts[$votedByStranger->id]->has_third_party_votes)->toBeTrue()
+        ->and($posts[$followedByStranger->id]->has_third_party_follows)->toBeTrue();
+});

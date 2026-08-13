@@ -20,6 +20,7 @@ class Feed extends Component
             'posts' => Post::query()
                 ->open()
                 ->withInteractionCounts()
+                ->withCardRelations()
                 ->latest()
                 ->paginate(10),
         ]);

@@ -60,19 +60,41 @@ class Post extends Model
     }
 
     /**
-     * Carrega o que o card de publicação (`x-post-card`) precisa para
-     * renderizar: autor, voto/acompanhamento do usuário atual e as
-     * contagens de recomendações, não recomendações e seguidores.
+     * Contagens de recomendações, não recomendações e acompanhamentos.
      */
     #[Scope]
     protected function withInteractionCounts(Builder $query): void
     {
-        $query->with(['user:id,name', 'voteFromCurrentUser', 'followFromCurrentUser'])
-            ->withCount([
-                'votes as recommendations_count' => fn (Builder $query) => $query->where('type', VoteType::Recommend),
-                'votes as not_recommendations_count' => fn (Builder $query) => $query->where('type', VoteType::NotRecommend),
-                'follows as followers_count',
-            ]);
+        $query->withCount([
+            'votes as recommendations_count' => fn (Builder $query) => $query->where('type', VoteType::Recommend),
+            'votes as not_recommendations_count' => fn (Builder $query) => $query->where('type', VoteType::NotRecommend),
+            'follows as followers_count',
+        ]);
+    }
+
+    /**
+     * O que o card de publicação (`x-post-card`) precisa além das contagens:
+     * autor e o voto/acompanhamento do usuário atual.
+     */
+    #[Scope]
+    protected function withCardRelations(Builder $query): void
+    {
+        $query->with(['user:id,name', 'voteFromCurrentUser', 'followFromCurrentUser']);
+    }
+
+    /**
+     * Diz à view se o botão de excluir pode ficar habilitado. Repete a
+     * comparação do `PostService::delete` em vez de olhar `followers_count`:
+     * a regra é "interação de outro usuário", e ela precisa continuar correta
+     * se o autor voltar a poder votar na própria publicação.
+     */
+    #[Scope]
+    protected function withThirdPartyInteraction(Builder $query): void
+    {
+        $query->withExists([
+            'votes as has_third_party_votes' => fn (Builder $query) => $query->whereColumn('votes.user_id', '!=', 'posts.user_id'),
+            'follows as has_third_party_follows' => fn (Builder $query) => $query->whereColumn('follows.user_id', '!=', 'posts.user_id'),
+        ]);
     }
 
     /**

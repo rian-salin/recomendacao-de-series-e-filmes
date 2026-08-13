@@ -19,6 +19,7 @@ class Index extends Component
             'posts' => auth()->user()
                 ->followedPosts()
                 ->withInteractionCounts()
+                ->withCardRelations()
                 ->latest('follows.created_at')
                 ->paginate(10),
         ]);
