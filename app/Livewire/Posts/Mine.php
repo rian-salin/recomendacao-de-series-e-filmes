@@ -7,6 +7,7 @@ use App\Exceptions\PostHasInteractionsException;
 use App\Models\Post;
 use App\Services\PostService;
 use Closure;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -23,20 +24,24 @@ class Mine extends Component
 
     public function close(PostService $posts, int $postId): void
     {
-        $post = Post::findOrFail($postId);
+        $this->runAction(function () use ($posts, $postId): void {
+            $post = Post::findOrFail($postId);
 
-        $this->authorize('close', $post);
+            $this->authorize('close', $post);
 
-        $this->runAction(fn () => $posts->close($post), __('Publication closed.'));
+            $posts->close($post);
+        }, __('Publication closed.'));
     }
 
     public function delete(PostService $posts, int $postId): void
     {
-        $post = Post::findOrFail($postId);
+        $this->runAction(function () use ($posts, $postId): void {
+            $post = Post::findOrFail($postId);
 
-        $this->authorize('delete', $post);
+            $this->authorize('delete', $post);
 
-        $this->runAction(fn () => $posts->delete($post), __('Publication deleted.'));
+            $posts->delete($post);
+        }, __('Publication deleted.'));
     }
 
     public function render(): View
@@ -59,6 +64,8 @@ class Mine extends Component
         try {
             $action();
             $this->actionMessage = $successMessage;
+        } catch (ModelNotFoundException) {
+            $this->actionError = __('This publication no longer exists.');
         } catch (PostAlreadyClosedException) {
             $this->actionError = __('This publication has already been closed.');
         } catch (PostHasInteractionsException) {

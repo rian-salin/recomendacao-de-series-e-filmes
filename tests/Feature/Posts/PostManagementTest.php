@@ -169,3 +169,23 @@ test('another user gets a 403 when closing or deleting a publication they do not
     expect(Post::count())->toBe(1)
         ->and(Post::sole()->status)->toBe(PostStatus::Open);
 });
+
+test('closing or deleting a publication that no longer exists sets a graceful error instead of a 404', function () {
+    $author = User::factory()->create();
+    $post = Post::factory()->for($author)->create();
+    $postId = $post->id;
+
+    $post->delete();
+
+    Livewire::actingAs($author)
+        ->test(Mine::class)
+        ->call('close', $postId)
+        ->assertOk()
+        ->assertSet('actionError', __('This publication no longer exists.'));
+
+    Livewire::actingAs($author)
+        ->test(Mine::class)
+        ->call('delete', $postId)
+        ->assertOk()
+        ->assertSet('actionError', __('This publication no longer exists.'));
+});
