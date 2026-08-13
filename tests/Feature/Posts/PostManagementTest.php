@@ -4,6 +4,7 @@ use App\Enums\PostStatus;
 use App\Exceptions\PostAlreadyClosedException;
 use App\Exceptions\PostHasInteractionsException;
 use App\Livewire\Posts\Feed;
+use App\Livewire\Posts\Mine;
 use App\Models\Follow;
 use App\Models\Post;
 use App\Models\User;
@@ -110,4 +111,61 @@ test('the third party interaction flags ignore the author and catch other users'
         ->and($posts[$votedByAuthor->id]->has_third_party_votes)->toBeFalse()
         ->and($posts[$votedByStranger->id]->has_third_party_votes)->toBeTrue()
         ->and($posts[$followedByStranger->id]->has_third_party_follows)->toBeTrue();
+});
+
+test('the author closes their publication through the component', function () {
+    $author = User::factory()->create();
+    $post = Post::factory()->for($author)->create();
+
+    Livewire::actingAs($author)
+        ->test(Mine::class)
+        ->call('close', $post->id)
+        ->assertSet('actionMessage', __('Publication closed.'))
+        ->assertSet('actionError', null);
+
+    expect($post->refresh()->status)->toBe(PostStatus::Closed);
+});
+
+test('the author deletes their publication through the component', function () {
+    $author = User::factory()->create();
+    $post = Post::factory()->for($author)->create();
+
+    Livewire::actingAs($author)
+        ->test(Mine::class)
+        ->call('delete', $post->id)
+        ->assertSet('actionMessage', __('Publication deleted.'));
+
+    expect(Post::count())->toBe(0);
+});
+
+test('a forged delete on a publication with interaction is refused by the backend', function () {
+    $author = User::factory()->create();
+    $post = Post::factory()->for($author)->create();
+
+    Vote::factory()->for($post)->recommend()->create();
+
+    Livewire::actingAs($author)
+        ->test(Mine::class)
+        ->call('delete', $post->id)
+        ->assertSet('actionError', __('It is not possible to delete: the publication has already received interaction from other users.'));
+
+    expect(Post::count())->toBe(1);
+});
+
+test('another user gets a 403 when closing or deleting a publication they do not own', function () {
+    $post = Post::factory()->create();
+    $stranger = User::factory()->create();
+
+    Livewire::actingAs($stranger)
+        ->test(Mine::class)
+        ->call('close', $post->id)
+        ->assertForbidden();
+
+    Livewire::actingAs($stranger)
+        ->test(Mine::class)
+        ->call('delete', $post->id)
+        ->assertForbidden();
+
+    expect(Post::count())->toBe(1)
+        ->and(Post::sole()->status)->toBe(PostStatus::Open);
 });
