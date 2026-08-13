@@ -10,6 +10,8 @@ use App\Models\Post;
 use App\Models\User;
 use App\Models\Vote;
 use App\Services\PostService;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Str;
 use Livewire\Livewire;
 
 test('only the author can close and delete their publication', function () {
@@ -188,4 +190,14 @@ test('closing or deleting a publication that no longer exists sets a graceful er
         ->call('delete', $postId)
         ->assertOk()
         ->assertSet('actionError', __('This publication no longer exists.'));
+});
+
+test('the confirmation component forwards the action to the confirm button, not to the trigger', function () {
+    $rendered = Blade::render(
+        '<x-confirm-action heading="Excluir publicação?" description="Sem volta." action="Excluir" variant="danger" wire:click="delete(7)">Excluir</x-confirm-action>'
+    );
+
+    expect($rendered)->toContain('x-data="{ open: false }"')
+        ->and($rendered)->toContain('wire:click="delete(7)"')
+        ->and(Str::before($rendered, 'Excluir publicação?'))->not->toContain('wire:click');
 });
